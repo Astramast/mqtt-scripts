@@ -18,3 +18,13 @@ services:
     restart: always
     env_file:
       - .env
+
+  mqtt2ntfy:
+	build:
+		context: mqtt2ntfy
+		dockerfile: Dockerfile
+	container_name: mqtt2ntfy
+	restart: always
+	env_file:
+		- .env
+
