@@ -22,16 +22,20 @@ def on_connect(client, userdata, flags, rc):
 def on_message(client, userdata, msg):
     logger.info(msg.topic + " " + str(msg.payload))
 
-    if msg.topic == "opinator":
-        assert msg.payload in (b"0", b"1")
-        is_up = msg.payload == b"1"
-        requests.post(
-            settings.INCUBATOR_BASE_URL + '/space/change_status',
-            data={
-                'open': 1 if is_up else 0,
-                'secret': settings.INCUBATOR_SECRET,
-            }
-        )
+    if msg.topic == TOPIC:
+		try:
+        	assert msg.payload in (b"0", b"1")
+		except AssertionError:
+			logger.warning(f"Invalid message received in topic <{TOPIC}> : <{msg.payload}>")
+		else:
+        	is_up = msg.payload == b"1"
+        	requests.post(
+        	    settings.INCUBATOR_BASE_URL + '/space/change_status',
+        	    data={
+        	        'open': 1 if is_up else 0,
+        	        'secret': settings.INCUBATOR_SECRET,
+        	    }
+        	)
 
 
 if __name__ == "__main__":
@@ -56,5 +60,6 @@ if __name__ == "__main__":
 
         client.connect(settings.MQTT_SERVER, 1883, 60)
         client.loop_forever()
-    except Exception:
-        logger.exception("Well, fuck.")
+    except Exception as e:
+        logger.exception(f"Exception in MQTT listener, could not proceed, stopping. Error : {e}")
+
