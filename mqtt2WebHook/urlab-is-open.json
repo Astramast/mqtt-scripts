@@ -1,0 +1,15 @@
+{
+	"content": null,
+	"embeds": [
+		{
+			"title": ":unlock: UrLab is Open !",
+			"description": "Join us at the hackerspace ! [Google Maps itinerary](https://maps.app.goo.gl/zcri8xPu8xc6aNHq5)",
+			"color": 10223459,
+			"image": {
+				"url": "https://urlab.be/static/img/space-invaders-open.png"
+			}
+		}
+	],
+	"attachments": []
+}
+

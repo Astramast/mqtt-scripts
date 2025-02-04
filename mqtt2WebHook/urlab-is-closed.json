@@ -1,0 +1,15 @@
+{
+	"content": null,
+	"embeds": [
+		{
+			"title": ":lock: UrLab is Closed :(",
+			"description": "Join us next time ! [Look our events](https://urlab.be/events)",
+			"color": 16737123,
+			"image": {
+				"url": "https://urlab.be/static/img/space-invaders.png"
+			}
+		}
+	],
+	"attachments": []
+}
+

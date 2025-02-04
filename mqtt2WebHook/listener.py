@@ -2,11 +2,14 @@ import paho.mqtt.client as mqtt
 import requests
 import logging
 import os
+import json
 
+from WebHook import WebHook
 import settings
 
-
 logger = logging.getLogger(__name__)
+devMode = 0
+webHook = WebHook(settings.WEBHOOK_URL)
 
 
 # The callback for when the client receives a CONNACK response from the server.
@@ -15,27 +18,24 @@ def on_connect(client, userdata, flags, rc):
 
 	# Subscribing in on_connect() means that if we lose the connection and
 	# reconnect then subscriptions will be renewed.
-	client.subscribe(TOPIC)
+	client.subscribe(settings.TOPIC)
 
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
 	logger.info(msg.topic + " " + str(msg.payload))
 
-	if msg.topic == TOPIC:
+	if msg.topic == settings.TOPIC:
 		try:
 			assert msg.payload in (b"0", b"1")
 		except AssertionError:
 			logger.warning(f"Invalid message received in topic <{TOPIC}> : <{msg.payload}>")
 		else:
 			is_up = msg.payload == b"1"
-			requests.post(
-			    settings.INCUBATOR_BASE_URL + '/space/change_status',
-			    data={
-			        'open': 1 if is_up else 0,
-			        'secret': settings.INCUBATOR_SECRET,
-			    }
-			)
+			if devMode:
+				return
+			with open(settings.WEBHOOK_UP_FILE if is_up else settings.WEBHOOK_DOWN_FILE, "r") as f:
+				webHook.send(json.load(f.read()))
 
 
 if __name__ == "__main__":
@@ -54,7 +54,7 @@ if __name__ == "__main__":
 	logging.info(" ")
 
 	try:
-		client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
+		client = mqtt.Client()
 		client.on_connect = on_connect
 		client.on_message = on_message
 
@@ -62,5 +62,4 @@ if __name__ == "__main__":
 		client.loop_forever()
 	except Exception as e:
 		logger.exception(f"Exception in MQTT listener, could not proceed, stopping. Error : {e}")
-	print("terminé")
 
