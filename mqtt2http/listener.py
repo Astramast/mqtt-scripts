@@ -15,7 +15,7 @@ def on_connect(client, userdata, flags, rc):
 
     # Subscribing in on_connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
-    client.subscribe("opinator")
+    client.subscribe(TOPIC)
 
 
 # The callback for when a PUBLISH message is received from the server.
@@ -58,7 +58,7 @@ if __name__ == "__main__":
         client.on_connect = on_connect
         client.on_message = on_message
 
-        client.connect(settings.MQTT_SERVER, 1883, 60)
+        client.connect(settings.MQTT_SERVER, MQTT_PORT, MQTT_KEEPALIVE)
         client.loop_forever()
     except Exception as e:
         logger.exception(f"Exception in MQTT listener, could not proceed, stopping. Error : {e}")
